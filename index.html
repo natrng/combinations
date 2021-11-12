@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+      integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+      crossorigin="anonymous"
+    ></script>
+    <title>Combo-Sum</title>
+  </head>
+  <body>
+    <fieldset>
+      <legend>Target Number</legend>
+      <input type="number" id="targetNumber" />
+    </fieldset>
+    <fieldset id="buildyourform">
+      <legend>Numbers to check combo</legend>
+      <input type="button" value="Add a field" class="add" id="add" />
+    </fieldset>
+    <fieldset>
+      <legend>Result</legend>
+      <input type="button" value="Result" class="result" id="result" />
+      <div id="combinations"></div>
+    </fieldset>
+    <script>
+      var combinationSum = function (candidates, target) {
+        let ans = [];
+        if (candidates === null || candidates.length === 0) return ans;
+
+        candidates.sort((a, b) => a - b);
+
+        let current = [];
+        findNumbers(candidates, target, 0, current, ans);
+        return ans;
+      };
+
+      const findNumbers = function (candidates, target, i, current, ans) {
+        if (target === 0) {
+          const temp = current.slice();
+          ans.push(temp);
+          return;
+        }
+
+        for (let j = i; j < candidates.length; j++) {
+          if (target < candidates[j]) return;
+          current.push(candidates[j]);
+          findNumbers(candidates, target - candidates[j], j, current, ans);
+          current.pop();
+        }
+      };
+
+      $(document).ready(function () {
+        $("#add").click(function () {
+          var lastField = $("#buildyourform div:last");
+          var intId =
+            (lastField && lastField.length && lastField.data("idx") + 1) || 1;
+          var fieldWrapper = $(
+            '<div class="fieldwrapper" id="field' + intId + '"/>'
+          );
+          fieldWrapper.data("idx", intId);
+          var fName = $('<input required type="number" class="fieldname" />');
+
+          var removeButton = $(
+            '<input type="button" class="remove" value="- REMOVE" />'
+          );
+          removeButton.click(function () {
+            $(this).parent().remove();
+          });
+          fieldWrapper.append(fName);
+          fieldWrapper.append(removeButton);
+          $("#buildyourform").append(fieldWrapper);
+        });
+
+        $("#targetNumber").change(function () {
+          targetNumber = this.value;
+        });
+
+        $("#result").click(function () {
+          var $inputValues = $(".fieldname")
+            .map((i, el) => Number(el.value))
+            .toArray();
+
+          var $targetNumber = $("#targetNumber").val();
+
+          var result = combinationSum($inputValues, $targetNumber);
+
+          result.map((value) => {
+            $("#combinations").append("<div>" + value + "</div>");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
